@@ -24,9 +24,9 @@ setup(
         'Topic :: Software Development :: Libraries :: Application Frameworks',
     ],
     install_requires=[
-        'Django>=1.8',
+        'Django>=1.10',
         'pyOpenSSL>=0.10',
-        'django-fields>=0.2.2'
+        'django-fields>=0.3.0'
     ],
     zip_safe=False
 )
