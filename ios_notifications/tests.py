@@ -81,17 +81,6 @@ class APNServiceTest(UseMockSSLServerMixin, TestCase):
         self.device = Device.objects.get(pk=self.device.pk)  # Refresh the object with values from db
         self.assertIsNotNone(self.device.last_notified_at)
 
-    def test_create_with_passphrase(self):
-        cert, key = generate_cert_and_pkey(as_string=True, passphrase='pass')
-        form = APNServiceForm({'name': 'test', 'hostname': 'localhost', 'certificate': cert, 'private_key': key, 'passphrase': 'pass'})
-        self.assertTrue(form.is_valid())
-
-    def test_create_with_invalid_passphrase(self):
-        cert, key = generate_cert_and_pkey(as_string=True, passphrase='correct')
-        form = APNServiceForm({'name': 'test', 'hostname': 'localhost', 'certificate': cert, 'private_key': key, 'passphrase': 'incorrect'})
-        self.assertFalse(form.is_valid())
-        self.assertTrue('passphrase' in form.errors)
-
     def test_pushing_notification_in_chunks(self):
         devices = []
         for i in xrange(10):

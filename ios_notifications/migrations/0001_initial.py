@@ -20,8 +20,7 @@ class Migration(migrations.Migration):
                 ('name', models.CharField(max_length=255)),
                 ('hostname', models.CharField(max_length=255)),
                 ('certificate', models.TextField()),
-                ('private_key', models.TextField()),
-                ('passphrase', django_fields.fields.EncryptedCharField(help_text=b'Passphrase for the private key', max_length=110, null=True, block_type=b'MODE_CBC', blank=True)),
+                ('private_key', models.TextField())
             ],
         ),
         migrations.CreateModel(

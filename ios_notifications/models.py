@@ -13,7 +13,6 @@ except ImportError:
     import datetime
     dt_now = datetime.datetime.now
 
-from django_fields.fields import EncryptedCharField
 import OpenSSL
 
 try:
@@ -22,7 +21,7 @@ try:
 except:
     GEVENT_OPEN_SSL=False
 
-from .exceptions import NotificationPayloadSizeExceeded, InvalidPassPhrase
+from .exceptions import NotificationPayloadSizeExceeded
 from .settings import get_setting
 
 
@@ -35,7 +34,7 @@ class BaseService(models.Model):
     PORT = 0  # Should be overriden by subclass
     connection = None
 
-    def _connect(self, certificate, private_key, passphrase=None):
+    def _connect(self, certificate, private_key):
         """
         Establishes an encrypted SSL socket connection to the service.
         After connecting the socket can be written to or read from.
@@ -46,12 +45,7 @@ class BaseService(models.Model):
         sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         cert = OpenSSL.crypto.load_certificate(OpenSSL.crypto.FILETYPE_PEM, certificate)
         args = [OpenSSL.crypto.FILETYPE_PEM, private_key]
-        if passphrase is not None:
-            args.append(str(passphrase))
-        try:
-            pkey = OpenSSL.crypto.load_privatekey(*args)
-        except OpenSSL.crypto.Error:
-            raise InvalidPassPhrase
+        pkey = OpenSSL.crypto.load_privatekey(*args)
         context = OpenSSL.SSL.Context(OpenSSL.SSL.TLSv1_METHOD)
         context.use_certificate(cert)
         context.use_privatekey(pkey)
@@ -85,9 +79,6 @@ class APNService(BaseService):
     """
     certificate = models.TextField()
     private_key = models.TextField()
-    passphrase = EncryptedCharField(
-        null=True, blank=True, help_text='Passphrase for the private key',
-        block_type='MODE_CBC')
 
     PORT = 2195
     fmt = '!cH32sH%ds'
@@ -97,7 +88,7 @@ class APNService(BaseService):
         Establishes an encrypted SSL socket connection to the service.
         After connecting the socket can be written to or read from.
         """
-        return super(APNService, self)._connect(self.certificate, self.private_key, self.passphrase)
+        return super(APNService, self)._connect(self.certificate, self.private_key)
 
     def push_notification_to_devices(self, notification, devices=None, chunk_size=100):
         """
@@ -335,7 +326,7 @@ class FeedbackService(BaseService):
         """
         Establishes an encrypted socket connection to the feedback service.
         """
-        return super(FeedbackService, self)._connect(self.apn_service.certificate, self.apn_service.private_key, self.apn_service.passphrase)
+        return super(FeedbackService, self)._connect(self.apn_service.certificate, self.apn_service.private_key)
 
     def call(self):
         """

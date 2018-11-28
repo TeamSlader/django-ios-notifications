@@ -25,8 +25,6 @@ class APNServiceForm(forms.ModelForm):
     START_ENCRYPTED_KEY = '-----BEGIN ENCRYPTED PRIVATE KEY-----'
     END_ENCRYPTED_KEY = '-----END ENCRYPTED PRIVATE KEY-----'
 
-    passphrase = forms.CharField(widget=PasswordInput(render_value=True), required=False)
-
     def clean_certificate(self):
         if not self.START_CERT or not self.END_CERT in self.cleaned_data['certificate']:
             raise forms.ValidationError('Invalid certificate')
@@ -40,12 +38,3 @@ class APNServiceForm(forms.ModelForm):
         if not has_start_phrase or not has_end_phrase:
             raise forms.ValidationError('Invalid private key')
         return self.cleaned_data['private_key']
-
-    def clean_passphrase(self):
-        passphrase = self.cleaned_data['passphrase']
-        if passphrase is not None and len(passphrase) > 0:
-            try:
-                OpenSSL.crypto.load_privatekey(OpenSSL.crypto.FILETYPE_PEM, self.cleaned_data['private_key'], str(passphrase))
-            except OpenSSL.crypto.Error:
-                raise forms.ValidationError('The passphrase for the private key appears to be invalid')
-        return self.cleaned_data['passphrase']
