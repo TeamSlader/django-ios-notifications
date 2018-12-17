@@ -3,7 +3,7 @@ from __future__ import unicode_literals
 
 from django.db import models, migrations
 from django.conf import settings
-import django_fields.fields
+# import django_fields.fields
 
 
 class Migration(migrations.Migration):
