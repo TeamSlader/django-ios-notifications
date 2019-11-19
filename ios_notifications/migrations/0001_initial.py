@@ -35,7 +35,7 @@ class Migration(migrations.Migration):
                 ('platform', models.CharField(max_length=30, null=True, blank=True)),
                 ('display', models.CharField(max_length=30, null=True, blank=True)),
                 ('os_version', models.CharField(max_length=20, null=True, blank=True)),
-                ('service', models.ForeignKey(to='ios_notifications.APNService')),
+                ('service', models.ForeignKey(to='ios_notifications.APNService', on_delete='PROTECTED')),
                 ('users', models.ManyToManyField(related_name='ios_devices', null=True, to=settings.AUTH_USER_MODEL, blank=True)),
             ],
         ),
@@ -45,7 +45,7 @@ class Migration(migrations.Migration):
                 ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
                 ('name', models.CharField(max_length=255)),
                 ('hostname', models.CharField(max_length=255)),
-                ('apn_service', models.ForeignKey(to='ios_notifications.APNService')),
+                ('apn_service', models.ForeignKey(to='ios_notifications.APNService', on_delete='PROTECTED')),
             ],
         ),
         migrations.CreateModel(
@@ -60,7 +60,7 @@ class Migration(migrations.Migration):
                 ('last_sent_at', models.DateTimeField(null=True, blank=True)),
                 ('custom_payload', models.CharField(help_text=b'JSON representation of an object containing custom payload.', max_length=240, blank=True)),
                 ('loc_payload', models.CharField(help_text=b'JSON representation of an object containing the localization payload.', max_length=240, blank=True)),
-                ('service', models.ForeignKey(to='ios_notifications.APNService')),
+                ('service', models.ForeignKey(to='ios_notifications.APNService', on_delete='PROTECTED')),
             ],
         ),
         migrations.AlterUniqueTogether(
